@@ -2,7 +2,7 @@
 
 namespace IPLogFilter.Commands.Executers
 {
-    public class CommandLogsExecutor
+    public class CommandLogsExecutor : ICommandLogsExecuter
     {
         private readonly ILogCommand[] _commands;
 
@@ -20,7 +20,7 @@ namespace IPLogFilter.Commands.Executers
                     command.Execute();
                 }
             }
-            catch(FileNotFoundException e)
+            catch (FileNotFoundException e)
             {
                 Console.WriteLine(e.Message);
             }
@@ -28,7 +28,7 @@ namespace IPLogFilter.Commands.Executers
             {
                 Console.WriteLine(e.Message);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
