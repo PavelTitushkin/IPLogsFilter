@@ -1,5 +1,4 @@
-﻿using IPLogFilter.Commands.Executers;
-using IPLogFilter.CommandsFactory;
+﻿using IPLogFilter.CommandsFactory;
 using IPLogFilter.Models;
 using IPLogFilter.ParsersLogs;
 using Microsoft.Extensions.Configuration;
@@ -30,8 +29,9 @@ namespace IPLogFilter
                 options.TimeStart = timeStart;
                 options.TimeEnd = timeEnd;
 
-                var commands = LogCommandFactory.CreateCommands(options);
-                var executor = new CommandLogsExecutor(commands);
+                // Повторение кода, можно вынести в отдельный метод
+                var commands = LogInstancesFactory.CreateCommands(options);
+                var executor = LogInstancesFactory.CreateExecuter(commands);
                 executor.ExecuteCommands();
             }
             catch (FileNotFoundException e)
@@ -39,14 +39,15 @@ namespace IPLogFilter
                 var parser = new CommandLineArgsParser();
                 var options = parser.ParseArgs(args);
 
-                var commands = LogCommandFactory.CreateCommands(options);
-                var executor = new CommandLogsExecutor(commands);
+                // Повторение кода, можно вынести в отдельный метод
+                var commands = LogInstancesFactory.CreateCommands(options);
+                var executor = LogInstancesFactory.CreateExecuter(commands);
                 executor.ExecuteCommands();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-            }        
+            }
         }
     }
 }
