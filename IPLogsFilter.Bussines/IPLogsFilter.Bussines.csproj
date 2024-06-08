@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IPLogsFilter.Abstractions\IPLogsFilter.Abstractions.csproj" />
-    <ProjectReference Include="..\IPLogsFilter.Db\IPLogsFilter.Db.csproj" />
   </ItemGroup>
 
 </Project>

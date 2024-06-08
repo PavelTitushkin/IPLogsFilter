@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPLogsFilter.Db", "IPLogsFi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPLogsFilter.Abstractions", "IPLogsFilter.Abstractions\IPLogsFilter.Abstractions.csproj", "{F174F2D1-AEAB-4411-8328-CDE8ECEBD2C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPLogsFilter.DataAccess", "IPLogsFilter.DataAccess\IPLogsFilter.DataAccess.csproj", "{370B81C0-70B8-43E4-AE39-06E789EDB3DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPLogsFilter.DataAccess", "IPLogsFilter.DataAccess\IPLogsFilter.DataAccess.csproj", "{370B81C0-70B8-43E4-AE39-06E789EDB3DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPLogsFilter.Bussines", "IPLogsFilter.Bussines\IPLogsFilter.Bussines.csproj", "{45D57BCC-68D9-474D-8100-DBFC1C971ABC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{370B81C0-70B8-43E4-AE39-06E789EDB3DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{370B81C0-70B8-43E4-AE39-06E789EDB3DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{370B81C0-70B8-43E4-AE39-06E789EDB3DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45D57BCC-68D9-474D-8100-DBFC1C971ABC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45D57BCC-68D9-474D-8100-DBFC1C971ABC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45D57BCC-68D9-474D-8100-DBFC1C971ABC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45D57BCC-68D9-474D-8100-DBFC1C971ABC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

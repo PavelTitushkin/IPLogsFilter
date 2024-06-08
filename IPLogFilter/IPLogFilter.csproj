@@ -16,10 +16,14 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IPLogsFilter.Abstractions\IPLogsFilter.Abstractions.csproj" />
+    <ProjectReference Include="..\IPLogsFilter.Bussines\IPLogsFilter.Bussines.csproj" />
+    <ProjectReference Include="..\IPLogsFilter.DataAccess\IPLogsFilter.DataAccess.csproj" />
     <ProjectReference Include="..\IPLogsFilter.Db\IPLogsFilter.Db.csproj" />
   </ItemGroup>
 
