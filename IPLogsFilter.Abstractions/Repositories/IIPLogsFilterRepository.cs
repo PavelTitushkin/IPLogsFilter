@@ -5,6 +5,7 @@ namespace IPLogsFilter.Abstractions.Repositories
     public interface IIPLogsFilterRepository
     {
         List<LogRecord> ReadLogs();
-        void WriteLogs(List<FiltredLogs> filtredLogs);
+        void WriteFiltredLogs(List<FiltredLogs> filtredLogs);
+        Task LoggingLogsFromFileToDatabaseAsync(List<LogRecord> logRecords, CancellationToken cancellationToken);
     }
 }

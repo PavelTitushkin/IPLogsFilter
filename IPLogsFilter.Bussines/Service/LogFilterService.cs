@@ -3,6 +3,7 @@ using IPLogsFilter.Abstractions.Repositories;
 using IPLogsFilter.Abstractions.Services;
 using System.Net;
 using System.Net.Sockets;
+using System.Text.RegularExpressions;
 
 namespace IPLogsFilter.Bussines.Service
 {
@@ -70,10 +71,41 @@ namespace IPLogsFilter.Bussines.Service
             return filtredLogs;
         }
 
-        public void WriteLogsToDb(List<FiltredLogs?> filterLogs)
+        public void WriteFiltredLogsToDb(List<FiltredLogs?> filterLogs)
         {
-            _repository.WriteLogs(filterLogs);
+            _repository.WriteFiltredLogs(filterLogs);
         }
+
+        public async Task ReadLogsFromFileAsync(string logFilePath, CancellationToken cancellationToken)
+        {
+            var logRecords = new List<LogRecord>();
+            using(var reader = new StreamReader(logFilePath))
+            {
+                var line = string.Empty;
+                while((line  = await reader.ReadLineAsync()) != null)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
+                    try
+                    {
+                        var log = ParseLogRecord(line);
+                        logRecords.Add(log);
+                    }
+                    catch (FormatException ex)
+                    {
+                        throw new FormatException(ex.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.Message);
+                    }
+                }
+                await _repository.LoggingLogsFromFileToDatabaseAsync(logRecords, cancellationToken);
+            }
+        }
+
 
         private bool IsIpAddressInRangeWithMask(IPAddress ipAddress, IPAddress startAddress, IPAddress addressMask)
         {
@@ -109,6 +141,37 @@ namespace IPLogsFilter.Bussines.Service
             }
 
             return false;
+        }
+
+        private LogRecord ParseLogRecord(string line)
+        {
+            var pattern = @"{RequestTime:(?<RequestTime>[^,]+),ApplicationName:(?<ApplicationName>[^,]*),Stage:(?<Stage>[^,]*),ClientIpAddress:(?<ClientIpAddress>[^,]+),ClientName:(?<ClientName>[^,]*),ClientVersion:(?<ClientVersion>[^,]*),Path:(?<Path>[^,]+),Method:(?<Method>[^,]+),StatusCode:(?<StatusCode>[^,]*),StatusMesage:(?<StatusMesage>[^,]*),ContentType:(?<ContentType>[^,]*),ContentLength:(?<ContentLength>[^,]*),ExecutionTime:(?<ExecutionTime>[^,]*),MemroyUsage:(?<MemroyUsage>[^,]*),}";
+
+            var match = Regex.Match(line, pattern);
+            if (!match.Success)
+            {
+                throw new FormatException("Не верный формат лога!");
+            }
+
+            var log = new LogRecord
+            {
+                RequestTime = DateTime.SpecifyKind(DateTime.Parse(match.Groups["RequestTime"].Value), DateTimeKind.Utc),
+                ApplicationName = match.Groups["ApplicationName"].Value,
+                Stage = match.Groups["Stage"].Value,
+                ClientIpAddress = IPAddress.Parse(match.Groups["ClientIpAddress"].Value),
+                ClientName = match.Groups["ClientName"].Value,
+                ClientVersion = match.Groups["ClientVersion"].Value,
+                Path = match.Groups["Path"].Value,
+                Method = match.Groups["Method"].Value,
+                StatusCode = match.Groups["StatusCode"].Value,
+                StatusMesage = match.Groups["StatusMesage"].Value,
+                ContentType = match.Groups["ContentType"].Value,
+                ContentLength = match.Groups["ContentLength"].Value,
+                ExecutionTime = TimeSpan.TryParse(match.Groups["ExecutionTime"].Value, out var executionTime) ? executionTime : (TimeSpan?)null,
+                MemroyUsage = int.TryParse(match.Groups["MemroyUsage"].Value, out var memoryUsage) ? memoryUsage : (int?)null
+            };
+
+            return log;
         }
     }
 }

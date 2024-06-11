@@ -13,12 +13,18 @@ namespace IPLogsFilter.DataAccess.Repositories
             _context = context;
         }
 
+        public async Task LoggingLogsFromFileToDatabaseAsync(List<LogRecord> logRecords, CancellationToken cancellationToken)
+        {
+            await _context.LogRecords.AddRangeAsync(logRecords, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
         public List<LogRecord> ReadLogs()
         {
             return _context.LogRecords.ToList();
         }
 
-        public void WriteLogs(List<FiltredLogs> filtredLogs)
+        public void WriteFiltredLogs(List<FiltredLogs> filtredLogs)
         {
             _context.FiltredLogs.AddRange(filtredLogs);
             _context.SaveChanges();

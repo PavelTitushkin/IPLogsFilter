@@ -12,6 +12,7 @@ namespace IPLogsFilter.Abstractions.Services
             DateTime timeStart, 
             DateTime timeEnd);
         List<FiltredLogs> CountingIPVisits(List<LogRecord> logs);
-        void WriteLogsToDb(List<FiltredLogs?> filterLogs);
+        void WriteFiltredLogsToDb(List<FiltredLogs?> filterLogs);
+        Task ReadLogsFromFileAsync(string logFilePath, CancellationToken cancellationToken);
     }
 }

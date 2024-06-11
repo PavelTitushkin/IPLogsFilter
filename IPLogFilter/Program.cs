@@ -59,7 +59,7 @@ namespace IPLogFilter
                 var logs = service.GetLogRecords();
                 var filtredLogs = service.FilterLogs(logs, options.AddressStart, options.AddressMask, options.TimeStart, options.TimeEnd);
                 var filterLogs = service.CountingIPVisits(filtredLogs);
-                service.WriteLogsToDb(filterLogs);
+                service.WriteFiltredLogsToDb(filterLogs);
 
                 foreach (var log in filterLogs)
                 {

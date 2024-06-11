@@ -10,7 +10,12 @@ namespace IPLogsFilter.Db
         public IPLogsFilterContext(DbContextOptions<IPLogsFilterContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<LogRecord>(entity =>
+            {
+                entity.Property(e => e.ExecutionTime)
+                .HasColumnType("interval")
+                .IsRequired(false);
+            });
         }
     }
 }
