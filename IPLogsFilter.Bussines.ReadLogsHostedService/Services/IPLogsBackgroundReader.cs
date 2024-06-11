@@ -1,4 +1,5 @@
-﻿using IPLogsFilter.Abstractions.Services;
+﻿using IPLogsFilter.Abstractions.Repositories;
+using IPLogsFilter.Abstractions.Services;
 using IPLogsFilter.Bussines.ReadLogsHostedService.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -33,7 +34,6 @@ namespace IPLogsFilter.Bussines.ReadLogsHostedService.Services
                         .OrderBy(f=>f)
                         .Take(AppSettings.FilesToProcessPerIteration)
                         .ToList();
-
                     foreach (var logFilePath in logFiles)
                     {
                         if (stoppingToken.IsCancellationRequested)
@@ -41,10 +41,17 @@ namespace IPLogsFilter.Bussines.ReadLogsHostedService.Services
                             break;
                         }
                         using var scope = _services.CreateScope();
-                        var workerService = scope.ServiceProvider.GetRequiredService<ILogFilterService>();
-                        await workerService.ReadLogsFromFileAsync(logFilePath, stoppingToken);
+                        var logService = scope.ServiceProvider.GetRequiredService<ILogFilterService>();
+                        var repositoryService = scope.ServiceProvider.GetRequiredService<IIPLogsFilterRepository>();
+
+                        if (await repositoryService.IsProcessedLogFileAsync(logFilePath, stoppingToken))
+                        {
+                            continue;
+                        }
+
+                        await logService.ReadLogsFromFileAsync(logFilePath, stoppingToken);
                         
-                        File.Delete(logFilePath);
+                        //File.Delete(logFilePath);
                     }
 
                     await Task.Delay(TimeSpan.FromSeconds(AppSettings.TimeToCheckForNewRawFiles), stoppingToken);

@@ -7,6 +7,7 @@ namespace IPLogsFilter.Db
     {
         public DbSet<LogRecord> LogRecords { get; set; }
         public DbSet<FiltredLogs> FiltredLogs { get; set; }
+        public DbSet<StatusLoggingLogs> StatusLoggingLogs { get; set; }
         public IPLogsFilterContext(DbContextOptions<IPLogsFilterContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -4,6 +4,7 @@ using System.Net;
 using IPLogsFilter.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IPLogsFilter.Db.Migrations
 {
     [DbContext(typeof(IPLogsFilterContext))]
-    partial class IPLogsFilterContextModelSnapshot : ModelSnapshot
+    [Migration("20240611115111_AddStatusLoggingLogsEntity")]
+    partial class AddStatusLoggingLogsEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -127,11 +130,6 @@ namespace IPLogsFilter.Db.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("file_name");
 
                     b.Property<bool>("IsProcessed")
                         .HasColumnType("boolean")

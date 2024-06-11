@@ -78,12 +78,19 @@ namespace IPLogsFilter.Bussines.Service
 
         public async Task ReadLogsFromFileAsync(string logFilePath, CancellationToken cancellationToken)
         {
+            var lastLine = await _repository.GetLastUnprocessedLineAsync(logFilePath, cancellationToken);
             var logRecords = new List<LogRecord>();
             using(var reader = new StreamReader(logFilePath))
             {
                 var line = string.Empty;
-                while((line  = await reader.ReadLineAsync()) != null)
+                var currentLine = 0;
+                while (currentLine < lastLine && (line = await reader.ReadLineAsync(cancellationToken)) != null)
                 {
+                    currentLine++;
+                }
+                while((line  = await reader.ReadLineAsync(cancellationToken)) != null)
+                {
+
                     if (cancellationToken.IsCancellationRequested)
                     {
                         break;
@@ -91,7 +98,9 @@ namespace IPLogsFilter.Bussines.Service
                     try
                     {
                         var log = ParseLogRecord(line);
-                        logRecords.Add(log);
+                        await _repository.LoggingLogAndStateFromFileToDatabaseAsync(log, logFilePath, ++currentLine, cancellationToken);
+                        //logRecords.Add(log);            
+                        //сохранили состояние и записи в БД с помощью транзакции.
                     }
                     catch (FormatException ex)
                     {
@@ -102,7 +111,8 @@ namespace IPLogsFilter.Bussines.Service
                         throw new Exception(ex.Message);
                     }
                 }
-                await _repository.LoggingLogsFromFileToDatabaseAsync(logRecords, cancellationToken);
+                await _repository.CompletingLogReadingAsync(logFilePath, cancellationToken);
+                //await _repository.LoggingLogsFromFileToDatabaseAsync(logRecords, cancellationToken);
             }
         }
 
