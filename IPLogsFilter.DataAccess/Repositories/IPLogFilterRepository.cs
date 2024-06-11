@@ -37,39 +37,44 @@ namespace IPLogsFilter.DataAccess.Repositories
 
         public async Task LoggingLogAndStateFromFileToDatabaseAsync(LogRecord log, string logFilePath, int currentLine, CancellationToken cancellationToken)
         {
-            using(var transaction = await _context.Database.BeginTransactionAsync(cancellationToken))
+            var executionStrategy = _context.Database.CreateExecutionStrategy();
+            await executionStrategy.ExecuteAsync(async () =>
             {
-                try
+                using (var transaction = await _context.Database.BeginTransactionAsync(cancellationToken))
                 {
-                    var isExistStateEntity = await _context.StatusLoggingLogs.FirstOrDefaultAsync(log => log.FileName == logFilePath, cancellationToken);
-                    if (isExistStateEntity != null)
+                    try
                     {
-                        isExistStateEntity.LastLine = currentLine;
-                        isExistStateEntity.IsProcessed = false;
-                        //_context.StatusLoggingLogs.Update(isExistStateEntity);
-                    }
-                    else
-                    {
-                        await _context.StatusLoggingLogs.AddAsync(new StatusLoggingLogs
+                        var isExistStateEntity = await _context.StatusLoggingLogs.FirstOrDefaultAsync(log => log.FileName == logFilePath, cancellationToken);
+                        if (isExistStateEntity != null)
                         {
-                            IsProcessed = false,
-                            LastLine = currentLine,
-                        },
-                        cancellationToken);
+                            isExistStateEntity.LastLine = currentLine;
+                            isExistStateEntity.IsProcessed = false;
+                            //_context.StatusLoggingLogs.Update(isExistStateEntity);
+                        }
+                        else
+                        {
+                            await _context.StatusLoggingLogs.AddAsync(new StatusLoggingLogs
+                            {
+                                FileName = logFilePath,
+                                IsProcessed = false,
+                                LastLine = currentLine,
+                            },
+                            cancellationToken);
+                        }
+
+                        await _context.LogRecords.AddAsync(log, cancellationToken);
+                        await _context.SaveChangesAsync(cancellationToken);
+                        await transaction.CommitAsync(cancellationToken);
                     }
-
-                    await _context.LogRecords.AddAsync(log, cancellationToken);
-                    await _context.SaveChangesAsync(cancellationToken);
-                    await transaction.CommitAsync(cancellationToken);
+                    catch (Exception)
+                    {
+                        await transaction.RollbackAsync(cancellationToken);
+                        throw;
+                    }
                 }
-                catch (Exception)
-                {
-                    await transaction.RollbackAsync(cancellationToken);
-                    throw;
-                }
-            }
+            });
         }
-
+    
         public async Task LoggingLogsFromFileToDatabaseAsync(List<LogRecord> logRecords, CancellationToken cancellationToken)
         {
             await _context.LogRecords.AddRangeAsync(logRecords, cancellationToken);
