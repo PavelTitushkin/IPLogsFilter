@@ -49,9 +49,7 @@ namespace IPLogsFilter.Bussines.ReadLogsHostedService.Services
                             continue;
                         }
 
-                        await logService.ReadLogsFromFileAsync(logFilePath, stoppingToken);
-                        
-                        //File.Delete(logFilePath);
+                        await logService.ReadLogsFromFileAsync(logFilePath, stoppingToken);                        
                     }
 
                     await Task.Delay(TimeSpan.FromSeconds(AppSettings.TimeToCheckForNewRawFiles), stoppingToken);

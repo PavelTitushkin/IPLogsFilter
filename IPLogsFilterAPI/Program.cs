@@ -6,6 +6,8 @@ using IPLogsFilter.Bussines.Service;
 using IPLogsFilter.DataAccess.Repositories;
 using IPLogsFilter.Db;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Minio;
 
 namespace IPLogsFilterAPI
 {
@@ -14,8 +16,17 @@ namespace IPLogsFilterAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var minioConfig = builder.Configuration.GetRequiredSection("AppSettingsMinioAPI").Get<AppSettingsMinioAPI>();
 
             // Add services to the container.
+            if (minioConfig != null)
+            {
+                builder.Services.AddMinio(configureClient => configureClient
+                    .WithEndpoint(minioConfig.EndPoint)
+                    .WithCredentials(minioConfig.AccessKey, minioConfig.SecretKey)
+                    .Build());
+            }
+
             builder.Services.AddDbContext<IPLogsFilterContext>(
                    optionsBuilder =>
                    {
@@ -28,11 +39,14 @@ namespace IPLogsFilterAPI
                    });
             
             builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+            builder.Services.Configure<AppSettingsMinio>(builder.Configuration.GetSection("AppSettingsMinio"));
 
             builder.Services.AddScoped<IIPLogsFilterRepository, IPLogFilterRepository>();
             builder.Services.AddScoped<ILogFilterService, LogFilterService>();
 
-            builder.Services.AddHostedService<IPLogsBackgroundReader>();
+
+            //builder.Services.AddHostedService<IPLogsBackgroundReader>();
+            builder.Services.AddHostedService<MinioIpLogsBackgroundReader>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
