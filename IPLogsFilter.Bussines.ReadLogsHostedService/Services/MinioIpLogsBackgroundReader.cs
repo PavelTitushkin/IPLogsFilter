@@ -19,6 +19,7 @@ namespace IPLogsFilter.Bussines.ReadLogsHostedService.Services
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IMinioClient _minioClient;
+        //private int countReadedFiles = 0;
         public AppSettingsMinio AppSettingsMinio { get; set; }
         public MinioIpLogsBackgroundReader(IServiceProvider serviceProvider, IOptionsMonitor<AppSettingsMinio> options, IMinioClient minioClient)
         {
@@ -37,6 +38,7 @@ namespace IPLogsFilter.Bussines.ReadLogsHostedService.Services
 
                     foreach (var logFilePath in logFiles
                         .OrderBy(f => f)
+                        //.Skip(countReadedFiles)
                         .Take(AppSettingsMinio.FilesToProcessPerIteration)
                         .ToList())
                     {
@@ -57,6 +59,7 @@ namespace IPLogsFilter.Bussines.ReadLogsHostedService.Services
                         await logService.ReadLogsFromFileAsync(logFilePath, stoppingToken);
                     }
 
+                    //countReadedFiles += AppSettingsMinio.FilesToProcessPerIteration;
                     await Task.Delay(TimeSpan.FromSeconds(AppSettingsMinio.TimeToCheckForNewRawFiles), stoppingToken);
                 }
                 catch (Exception ex)
@@ -71,9 +74,7 @@ namespace IPLogsFilter.Bussines.ReadLogsHostedService.Services
             var logFiles = new List<string>();
 
             var args = new ListObjectsArgs()
-                .WithBucket(AppSettingsMinio.BucketName)
-                .WithPrefix(AppSettingsMinio.BucketName + "/")
-                .WithRecursive(true);
+                .WithBucket(AppSettingsMinio.BucketName);
 
             var logs = _minioClient.ListObjectsAsync(args, stoppingToken);
             foreach (var log in logs)
@@ -91,11 +92,12 @@ namespace IPLogsFilter.Bussines.ReadLogsHostedService.Services
                     var getObjectArgs = new GetObjectArgs()
                         .WithBucket(AppSettingsMinio.BucketName)
                         .WithObject(log.Key)
-                        .WithCallbackStream(async stream =>
-                            {
-                                using var fileStream = File.Create(localFilePath);
-                                await stream.CopyToAsync(fileStream, stoppingToken);
-                            });
+                        .WithFile(localFilePath);
+                        //.WithCallbackStream(async stream =>
+                        //    {
+                        //        using var fileStream = File.Create(localFilePath);
+                        //        await stream.CopyToAsync(fileStream, stoppingToken);
+                        //    });
 
                     await _minioClient.GetObjectAsync(getObjectArgs, stoppingToken);
                     logFiles.Add(localFilePath);

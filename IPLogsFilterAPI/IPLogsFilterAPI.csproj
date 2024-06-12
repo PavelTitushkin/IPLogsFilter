@@ -26,4 +26,8 @@
     <ProjectReference Include="..\IPLogsFilter.Db\IPLogsFilter.Db.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="LogFilesMinio\" />
+  </ItemGroup>
+
 </Project>

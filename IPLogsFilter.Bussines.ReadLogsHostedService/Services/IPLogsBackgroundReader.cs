@@ -17,6 +17,7 @@ namespace IPLogsFilter.Bussines.ReadLogsHostedService.Services
     {
         private IServiceProvider _services;
         public AppSettings AppSettings;
+        //private int countReadedFiles = 0;
 
         public IPLogsBackgroundReader(IOptionsMonitor<AppSettings> options, IServiceProvider services)
         {
@@ -32,6 +33,7 @@ namespace IPLogsFilter.Bussines.ReadLogsHostedService.Services
                 {
                     var logFiles = Directory.GetFiles(AppSettings.PathToFolderWithLogs, "*.log", SearchOption.TopDirectoryOnly)
                         .OrderBy(f=>f)
+                        //.Skip(countReadedFiles)
                         .Take(AppSettings.FilesToProcessPerIteration)
                         .ToList();
                     foreach (var logFilePath in logFiles)
@@ -52,6 +54,7 @@ namespace IPLogsFilter.Bussines.ReadLogsHostedService.Services
                         await logService.ReadLogsFromFileAsync(logFilePath, stoppingToken);                        
                     }
 
+                    //countReadedFiles += AppSettings.FilesToProcessPerIteration;
                     await Task.Delay(TimeSpan.FromSeconds(AppSettings.TimeToCheckForNewRawFiles), stoppingToken);
                 }
                 catch (Exception ex)

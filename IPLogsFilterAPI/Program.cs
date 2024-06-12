@@ -24,6 +24,7 @@ namespace IPLogsFilterAPI
                 builder.Services.AddMinio(configureClient => configureClient
                     .WithEndpoint(minioConfig.EndPoint)
                     .WithCredentials(minioConfig.AccessKey, minioConfig.SecretKey)
+                    .WithSSL(false)
                     .Build());
             }
 
@@ -45,8 +46,8 @@ namespace IPLogsFilterAPI
             builder.Services.AddScoped<ILogFilterService, LogFilterService>();
 
 
-            //builder.Services.AddHostedService<IPLogsBackgroundReader>();
-            builder.Services.AddHostedService<MinioIpLogsBackgroundReader>();
+            builder.Services.AddHostedService<IPLogsBackgroundReader>();
+            //builder.Services.AddHostedService<MinioIpLogsBackgroundReader>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

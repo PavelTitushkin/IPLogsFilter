@@ -49,7 +49,6 @@ namespace IPLogsFilter.DataAccess.Repositories
                         {
                             isExistStateEntity.LastLine = currentLine;
                             isExistStateEntity.IsProcessed = false;
-                            //_context.StatusLoggingLogs.Update(isExistStateEntity);
                         }
                         else
                         {
