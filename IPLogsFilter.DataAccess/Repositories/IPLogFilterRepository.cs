@@ -1,7 +1,11 @@
-﻿using IPLogsFilter.Abstractions.Entities;
+﻿using IPLogsFilter.Abstractions.DTOs;
+using IPLogsFilter.Abstractions.Entities;
 using IPLogsFilter.Abstractions.Repositories;
 using IPLogsFilter.Db;
 using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using System.Linq;
+using System.Linq.Dynamic.Core;
 
 namespace IPLogsFilter.DataAccess.Repositories
 {
@@ -28,6 +32,25 @@ namespace IPLogsFilter.DataAccess.Repositories
                 .Where(log => log.FileName == logFilePath)
                 .Select(l => l.LastLine)
                 .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task<RestDTO<List<LogRecord>>> Get(int pg, int pageSize, string? sortColumn, string? sortOrder)
+        {
+            var query = _context.LogRecords.AsQueryable();
+            var logsCount = await query.CountAsync();
+            query = query
+                .AsNoTracking()
+                .OrderBy($"{sortColumn} {sortOrder}")
+                .Skip(pg * pageSize)
+                .Take(pageSize);
+
+            return new RestDTO<List<LogRecord>>()
+            {
+                Data = await query.ToListAsync(),
+                PageIndex = pg,
+                PageSize = pageSize,
+                RecordCount = logsCount
+            };
         }
 
         public async Task<bool> IsProcessedLogFileAsync(string logFilePath, CancellationToken cancellationToken)

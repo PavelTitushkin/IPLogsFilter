@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\IPLogsFilter.Abstractions\IPLogsFilter.Abstractions.csproj" />
     <ProjectReference Include="..\IPLogsFilter.Db\IPLogsFilter.Db.csproj" />
   </ItemGroup>

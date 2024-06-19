@@ -1,4 +1,5 @@
-﻿using IPLogsFilter.Abstractions.Entities;
+﻿using IPLogsFilter.Abstractions.DTOs;
+using IPLogsFilter.Abstractions.Entities;
 using System.Threading;
 
 namespace IPLogsFilter.Abstractions.Repositories
@@ -12,5 +13,6 @@ namespace IPLogsFilter.Abstractions.Repositories
         Task CompletingLogReadingAsync(string logFilePath, CancellationToken cancellationToken);
         Task<bool> IsProcessedLogFileAsync(string logFilePath, CancellationToken cancellationToken);
         Task<int> GetLastUnprocessedLineAsync(string logFilePath, CancellationToken cancellationToken);
+        Task<RestDTO<List<LogRecord>>> Get(int pg, int pageSize, string? sortColumn, string? sortOrder);
     }
 }

@@ -1,4 +1,5 @@
-﻿using IPLogsFilter.Abstractions.Entities;
+﻿using IPLogsFilter.Abstractions.DTOs;
+using IPLogsFilter.Abstractions.Entities;
 
 namespace IPLogsFilter.Abstractions.Services
 {
@@ -14,5 +15,6 @@ namespace IPLogsFilter.Abstractions.Services
         List<FiltredLogs> CountingIPVisits(List<LogRecord> logs);
         void WriteFiltredLogsToDb(List<FiltredLogs?> filterLogs);
         Task ReadLogsFromFileAsync(string logFilePath, CancellationToken cancellationToken);
+        Task<RestDTO<List<LogRecord>>> Get(int pg, int pageSize, string? sortColumn, string? sortOrder);
     }
 }

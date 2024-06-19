@@ -1,4 +1,5 @@
-﻿using IPLogsFilter.Abstractions.Entities;
+﻿using IPLogsFilter.Abstractions.DTOs;
+using IPLogsFilter.Abstractions.Entities;
 using IPLogsFilter.Abstractions.Repositories;
 using IPLogsFilter.Abstractions.Services;
 using System.Net;
@@ -116,6 +117,11 @@ namespace IPLogsFilter.Bussines.Service
             }
         }
 
+        public async Task<RestDTO<List<LogRecord>>> Get(int pg, int pageSize, string? sortColumn, string? sortOrder)
+        {
+            return await _repository.Get(pg, pageSize, sortColumn, sortOrder);
+        }
+
 
         private bool IsIpAddressInRangeWithMask(IPAddress ipAddress, IPAddress startAddress, IPAddress addressMask)
         {
@@ -183,5 +189,6 @@ namespace IPLogsFilter.Bussines.Service
 
             return log;
         }
+
     }
 }
