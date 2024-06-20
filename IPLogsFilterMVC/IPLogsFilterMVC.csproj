@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IPLogsFilter.Abstractions\IPLogsFilter.Abstractions.csproj" />
+    <ProjectReference Include="..\IPLogsFilter.Bussines.ReadLogsHostedService\IPLogsFilter.Bussines.ReadLogsHostedService.csproj" />
     <ProjectReference Include="..\IPLogsFilter.Bussines\IPLogsFilter.Bussines.csproj" />
     <ProjectReference Include="..\IPLogsFilter.DataAccess\IPLogsFilter.DataAccess.csproj" />
   </ItemGroup>

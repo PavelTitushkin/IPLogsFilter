@@ -1,4 +1,6 @@
 ﻿using IPLogsFilter.Abstractions.Services;
+using IPLogsFilter.Bussines.ReadLogsHostedService.Contracts;
+using IPLogsFilter.Bussines.ReadLogsHostedService.Services;
 using IPLogsFilterMVC.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,11 +13,13 @@ namespace IPLogsFilterMVC.Controllers
     {
         private readonly ILogger<LogsController> _logger;
         private readonly ILogFilterService _logFilterService;
+        private readonly ILogBackgroundReader _backgroundReader;
 
-        public LogsController(ILogger<LogsController> logger, ILogFilterService logFilterService)
+        public LogsController(ILogger<LogsController> logger, ILogFilterService logFilterService, ILogBackgroundReader backgroundReader)
         {
             _logger = logger;
             _logFilterService = logFilterService;
+            _backgroundReader = backgroundReader;
         }
 
         public async Task<IActionResult> Index(
@@ -42,6 +46,26 @@ namespace IPLogsFilterMVC.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        public IActionResult GetStatusHandler()
+        {
+            var status = _backgroundReader.GetStatusHandler();
+
+            return View(status);
+        }
+
+        public IActionResult StopHandler()
+        {
+            _backgroundReader.StopHandler(false);
+
+            return View();
+        }
+
+        public IActionResult StartHandler(CancellationToken cancellationToken)
+        {
+            _backgroundReader.StartHandler(cancellationToken);
+
+            return View();
+        }
         public IActionResult Privacy()
         {
             return View();
