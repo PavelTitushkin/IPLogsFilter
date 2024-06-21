@@ -50,7 +50,18 @@ namespace IPLogsFilterMVC
 
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("LogsPolicy", policy => policy.RequireAuthenticatedUser());
+                options.AddPolicy("WebMasterOrWebAdmin", policy =>
+                    policy.RequireRole("WebMaster", "WebAdmin"));
+
+                options.AddPolicy("ProcessingManagement", policy =>
+                    policy.RequireRole("WebAdminSupport")
+                          .RequireClaim("Permission", "AccessLogViewer_ProcessingManagement"));
+
+                options.AddPolicy("ProcessingStop", policy =>
+                    policy.RequireClaim("Permission", "AccessLogViewer_ProcessingStop"));
+
+                options.AddPolicy("ProcessingStart", policy =>
+                    policy.RequireClaim("Permission", "AccessLogViewer_ProcessingStart"));
             });
 
             builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));

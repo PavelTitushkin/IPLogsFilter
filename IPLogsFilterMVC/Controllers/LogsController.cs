@@ -2,6 +2,7 @@
 using IPLogsFilter.Bussines.ReadLogsHostedService.Contracts;
 using IPLogsFilter.Bussines.ReadLogsHostedService.Services;
 using IPLogsFilterMVC.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Diagnostics;
@@ -9,6 +10,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace IPLogsFilterMVC.Controllers
 {
+    [Authorize(Policy = "WebMasterOrWebAdmin")]
     public class LogsController : Controller
     {
         private readonly ILogger<LogsController> _logger;
@@ -46,6 +48,7 @@ namespace IPLogsFilterMVC.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [AllowAnonymous]
         public IActionResult GetStatusHandler()
         {
             var status = _backgroundReader.GetStatusHandler();
@@ -53,6 +56,7 @@ namespace IPLogsFilterMVC.Controllers
             return View(status);
         }
 
+        [Authorize(Policy = "ProcessingStop")]
         public IActionResult StopHandler()
         {
             _backgroundReader.StopHandler(false);
@@ -60,6 +64,7 @@ namespace IPLogsFilterMVC.Controllers
             return View();
         }
 
+        [Authorize(Policy = "ProcessingStart")]
         public IActionResult StartHandler(CancellationToken cancellationToken)
         {
             _backgroundReader.StartHandler(cancellationToken);
